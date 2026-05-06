@@ -2,7 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>ru.yandex.practicum</groupId>
         <artifactId>serialization</artifactId>
@@ -35,15 +37,32 @@
                 <artifactId>avro-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>schemas</id>
+                        <id>generate-avro-java</id>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>idl-protocol</goal>
+                            <goal>schema</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+                            <sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
                             <stringType>String</stringType>
+                            <imports>
+                                <import>${project.basedir}/src/main/avro/telemetry/DeviceTypeAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ConditionTypeAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ConditionOperationAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ActionTypeAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/DeviceAddedEventAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/DeviceRemovedEventAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ScenarioConditionAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/DeviceActionAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ScenarioAddedEventAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ScenarioRemovedEventAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/ClimateSensorAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/LightSensorAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/MotionSensorAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/SwitchSensorAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/TemperatureSensorAvro.avsc</import>
+                            </imports>
                         </configuration>
                     </execution>
                 </executions>
@@ -52,17 +71,16 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>add-source</id>
+                        <id>add-generated-avro-sources</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.build.directory}/generated-sources</source>
+                                <source>${project.build.directory}/generated-sources/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -70,5 +88,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
