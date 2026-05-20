@@ -13,14 +13,36 @@ import java.util.Properties;
 @Configuration
 @EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfig {
+
     @Bean
     public KafkaProducer<String, byte[]> kafkaProducer(KafkaProperties kafkaProperties) {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
-        properties.put(ProducerConfig.ACKS_CONFIG, "1");
-        properties.put(ProducerConfig.LINGER_MS_CONFIG, "5");
+
+        properties.put(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                kafkaProperties.getBootstrapServers()
+        );
+
+        properties.put(
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                StringSerializer.class.getName()
+        );
+
+        properties.put(
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                ByteArraySerializer.class.getName()
+        );
+
+        properties.put(
+                ProducerConfig.ACKS_CONFIG,
+                "1"
+        );
+
+        properties.put(
+                ProducerConfig.LINGER_MS_CONFIG,
+                "5"
+        );
+
         return new KafkaProducer<>(properties);
     }
 }
