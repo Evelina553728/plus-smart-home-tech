@@ -8,11 +8,16 @@ import ru.yandex.practicum.kafka.telemetry.event.*;
 public class SensorEventMapper {
 
     public SensorEventAvro toAvro(SensorEvent event) {
+        Object payload = toPayload(event);
+
+        System.err.println("SENSOR EVENT DOMAIN: " + event.getClass().getName());
+        System.err.println("SENSOR EVENT AVRO PAYLOAD: " + payload.getClass().getName());
+
         return new SensorEventAvro(
                 event.getId(),
                 event.getHubId(),
                 event.getTimestamp(),
-                toPayload(event)
+                payload
         );
     }
 

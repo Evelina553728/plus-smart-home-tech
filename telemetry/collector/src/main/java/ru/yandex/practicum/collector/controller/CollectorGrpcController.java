@@ -40,7 +40,7 @@ public class CollectorGrpcController extends CollectorControllerGrpc.CollectorCo
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             responseObserver.onError(e);
         }
     }
@@ -53,7 +53,7 @@ public class CollectorGrpcController extends CollectorControllerGrpc.CollectorCo
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             responseObserver.onError(e);
         }
     }
