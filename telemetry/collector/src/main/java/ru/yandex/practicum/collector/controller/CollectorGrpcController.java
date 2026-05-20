@@ -35,9 +35,14 @@ public class CollectorGrpcController extends CollectorControllerGrpc.CollectorCo
     @Override
     public void collectHubEvent(HubEventProto request,
                                 StreamObserver<Empty> responseObserver) {
-        producer.send(hubEventMapper.toAvro(hubEventProtoMapper.toDomain(request)));
-        responseObserver.onNext(Empty.getDefaultInstance());
-        responseObserver.onCompleted();
+        try {
+            producer.send(hubEventMapper.toAvro(hubEventProtoMapper.toDomain(request)));
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseObserver.onError(e);
+        }
     }
 
     @Override
