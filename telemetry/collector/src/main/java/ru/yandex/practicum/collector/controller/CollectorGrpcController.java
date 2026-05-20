@@ -3,36 +3,39 @@ package ru.yandex.practicum.collector.controller;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import ru.yandex.practicum.collector.grpc.HubEventProtoMapper;
+import ru.yandex.practicum.collector.grpc.SensorEventProtoMapper;
+import ru.yandex.practicum.collector.kafka.TelemetryEventProducer;
+import ru.yandex.practicum.collector.mapper.HubEventMapper;
+import ru.yandex.practicum.collector.mapper.SensorEventMapper;
 import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 
 @GrpcService
 public class CollectorGrpcController extends CollectorControllerGrpc.CollectorControllerImplBase {
+    private final SensorEventProtoMapper sensorEventProtoMapper;
+    private final HubEventProtoMapper hubEventProtoMapper;
+    private final SensorEventMapper sensorEventMapper;
+    private final HubEventMapper hubEventMapper;
+    private final TelemetryEventProducer producer;
 
-    private static final String HUB_TOPIC = "telemetry.hubs.v1";
-    private static final String SENSOR_TOPIC = "telemetry.sensors.v1";
-
-    private final Producer<String, byte[]> kafkaProducer;
-
-    public CollectorGrpcController(Producer<String, byte[]> kafkaProducer) {
-        this.kafkaProducer = kafkaProducer;
+    public CollectorGrpcController(SensorEventProtoMapper sensorEventProtoMapper,
+                                   HubEventProtoMapper hubEventProtoMapper,
+                                   SensorEventMapper sensorEventMapper,
+                                   HubEventMapper hubEventMapper,
+                                   TelemetryEventProducer producer) {
+        this.sensorEventProtoMapper = sensorEventProtoMapper;
+        this.hubEventProtoMapper = hubEventProtoMapper;
+        this.sensorEventMapper = sensorEventMapper;
+        this.hubEventMapper = hubEventMapper;
+        this.producer = producer;
     }
 
     @Override
     public void collectHubEvent(HubEventProto request,
                                 StreamObserver<Empty> responseObserver) {
-
-        kafkaProducer.send(
-                new ProducerRecord<>(
-                        HUB_TOPIC,
-                        request.getHubId(),
-                        request.toByteArray()
-                )
-        );
-
+        producer.send(hubEventMapper.toAvro(hubEventProtoMapper.toDomain(request)));
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
@@ -40,15 +43,7 @@ public class CollectorGrpcController extends CollectorControllerGrpc.CollectorCo
     @Override
     public void collectSensorEvent(SensorEventProto request,
                                    StreamObserver<Empty> responseObserver) {
-
-        kafkaProducer.send(
-                new ProducerRecord<>(
-                        SENSOR_TOPIC,
-                        request.getId(),
-                        request.toByteArray()
-                )
-        );
-
+        producer.send(sensorEventMapper.toAvro(sensorEventProtoMapper.toDomain(request)));
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
