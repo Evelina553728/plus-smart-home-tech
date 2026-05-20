@@ -43,8 +43,13 @@ public class CollectorGrpcController extends CollectorControllerGrpc.CollectorCo
     @Override
     public void collectSensorEvent(SensorEventProto request,
                                    StreamObserver<Empty> responseObserver) {
-        producer.send(sensorEventMapper.toAvro(sensorEventProtoMapper.toDomain(request)));
-        responseObserver.onNext(Empty.getDefaultInstance());
-        responseObserver.onCompleted();
+        try {
+            producer.send(sensorEventMapper.toAvro(sensorEventProtoMapper.toDomain(request)));
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseObserver.onError(e);
+        }
     }
 }
