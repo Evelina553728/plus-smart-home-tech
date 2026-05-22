@@ -1,7 +1,6 @@
 package ru.yandex.practicum.analyzer.service;
 
 import com.google.protobuf.Timestamp;
-import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.analyzer.model.Action;
@@ -14,7 +13,13 @@ import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
-import ru.yandex.practicum.kafka.telemetry.event.*;
+import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
 
 import java.time.Instant;
 import java.util.List;
@@ -48,9 +53,7 @@ public class ScenarioEvaluationService {
 
     private boolean checkCondition(SensorsSnapshotAvro snapshot,
                                    ScenarioCondition scenarioCondition) {
-
         String sensorId = scenarioCondition.getSensor().getId();
-
         Map<String, SensorStateAvro> states = snapshot.getSensorsState();
 
         if (!states.containsKey(sensorId)) {
@@ -58,7 +61,6 @@ public class ScenarioEvaluationService {
         }
 
         SensorStateAvro sensorState = states.get(sensorId);
-
         Object data = sensorState.getData();
 
         Integer actualValue = extractValue(
@@ -70,10 +72,7 @@ public class ScenarioEvaluationService {
             return false;
         }
 
-        return compare(
-                actualValue,
-                scenarioCondition.getCondition()
-        );
+        return compare(actualValue, scenarioCondition.getCondition());
     }
 
     private Integer extractValue(Object data, String type) {
@@ -123,8 +122,8 @@ public class ScenarioEvaluationService {
             }
 
             case "SWITCH" -> {
-                if (data instanceof SwitchSensorAvro sw) {
-                    yield sw.getState() ? 1 : 0;
+                if (data instanceof SwitchSensorAvro switchSensor) {
+                    yield switchSensor.getState() ? 1 : 0;
                 }
 
                 yield null;
@@ -137,20 +136,20 @@ public class ScenarioEvaluationService {
     private boolean compare(Integer actualValue, Condition condition) {
         Integer expectedValue = condition.getValue();
 
+        if (expectedValue == null) {
+            return false;
+        }
+
         return switch (condition.getOperation()) {
             case "EQUALS" -> actualValue.equals(expectedValue);
-
             case "GREATER_THAN" -> actualValue > expectedValue;
-
             case "LOWER_THAN" -> actualValue < expectedValue;
-
             default -> false;
         };
     }
 
     private void executeScenario(SensorsSnapshotAvro snapshot,
                                  Scenario scenario) {
-
         for (ScenarioAction scenarioAction : scenario.getActions()) {
             sendAction(snapshot, scenario, scenarioAction);
         }
@@ -159,14 +158,15 @@ public class ScenarioEvaluationService {
     private void sendAction(SensorsSnapshotAvro snapshot,
                             Scenario scenario,
                             ScenarioAction scenarioAction) {
-
         Action action = scenarioAction.getAction();
 
-        DeviceActionProto protoAction = DeviceActionProto.newBuilder()
+        DeviceActionProto.Builder actionBuilder = DeviceActionProto.newBuilder()
                 .setSensorId(scenarioAction.getSensor().getId())
-                .setType(ActionTypeProto.valueOf(action.getType()))
-                .setValue(action.getValue())
-                .build();
+                .setType(ActionTypeProto.valueOf(action.getType()));
+
+        if (action.getValue() != null) {
+            actionBuilder.setValue(action.getValue());
+        }
 
         Instant now = Instant.now();
 
@@ -178,7 +178,7 @@ public class ScenarioEvaluationService {
         DeviceActionRequest request = DeviceActionRequest.newBuilder()
                 .setHubId(snapshot.getHubId())
                 .setScenarioName(scenario.getName())
-                .setAction(protoAction)
+                .setAction(actionBuilder.build())
                 .setTimestamp(timestamp)
                 .build();
 
