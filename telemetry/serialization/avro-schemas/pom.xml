@@ -51,17 +51,22 @@
                                 <import>${project.basedir}/src/main/avro/telemetry/ConditionTypeAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/ConditionOperationAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/ActionTypeAvro.avsc</import>
+
                                 <import>${project.basedir}/src/main/avro/telemetry/DeviceAddedEventAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/DeviceRemovedEventAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/ScenarioConditionAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/DeviceActionAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/ScenarioAddedEventAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/ScenarioRemovedEventAvro.avsc</import>
+
                                 <import>${project.basedir}/src/main/avro/telemetry/ClimateSensorAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/LightSensorAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/MotionSensorAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/SwitchSensorAvro.avsc</import>
                                 <import>${project.basedir}/src/main/avro/telemetry/TemperatureSensorAvro.avsc</import>
+
+                                <import>${project.basedir}/src/main/avro/telemetry/SensorStateAvro.avsc</import>
+                                <import>${project.basedir}/src/main/avro/telemetry/SensorsSnapshotAvro.avsc</import>
                             </imports>
                         </configuration>
                     </execution>
