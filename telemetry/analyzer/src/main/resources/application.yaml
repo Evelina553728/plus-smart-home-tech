@@ -6,10 +6,9 @@ spring:
     name: analyzer
 
   datasource:
-    url: jdbc:h2:mem:analyzer
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${ANALYZER_DB_URL:jdbc:h2:mem:analyzer}
+    username: ${ANALYZER_DB_USERNAME:sa}
+    password: ${ANALYZER_DB_PASSWORD:}
 
   jpa:
     hibernate:
@@ -32,7 +31,7 @@ grpc:
 
 analyzer:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     snapshots-topic: telemetry.snapshots.v1
     hubs-topic: telemetry.hubs.v1
     snapshots-group-id: analyzer-snapshots
