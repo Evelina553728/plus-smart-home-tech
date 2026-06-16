@@ -1,15 +1,15 @@
 package ru.yandex.practicum.commerce.delivery.controller;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.delivery.service.DeliveryService;
-import ru.yandex.practicum.commerce.interactionapi.client.DeliveryClient;
 import ru.yandex.practicum.commerce.interactionapi.dto.delivery.DeliveryDto;
 
 import java.util.UUID;
 
 @RestController
-public class DeliveryController implements DeliveryClient {
+@RequestMapping("/api/v1/delivery")
+public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
@@ -17,28 +17,28 @@ public class DeliveryController implements DeliveryClient {
         this.deliveryService = deliveryService;
     }
 
-    @Override
-    public DeliveryDto planDelivery(@RequestBody DeliveryDto deliveryDto) {
-        return deliveryService.planDelivery(deliveryDto);
+    @PutMapping
+    public ResponseEntity<DeliveryDto> planDelivery(@RequestBody DeliveryDto deliveryDto) {
+        return ResponseEntity.ok(deliveryService.planDelivery(deliveryDto));
     }
 
-    @Override
-    public Double deliveryCost(@RequestBody DeliveryDto deliveryDto) {
-        return deliveryService.deliveryCost(deliveryDto);
+    @PostMapping("/cost")
+    public ResponseEntity<Double> deliveryCost(@RequestBody DeliveryDto deliveryDto) {
+        return ResponseEntity.ok(deliveryService.deliveryCost(deliveryDto));
     }
 
-    @Override
-    public DeliveryDto picked(@RequestBody UUID deliveryId) {
-        return deliveryService.picked(deliveryId);
+    @PostMapping("/picked")
+    public ResponseEntity<DeliveryDto> picked(@RequestBody UUID deliveryId) {
+        return ResponseEntity.ok(deliveryService.picked(deliveryId));
     }
 
-    @Override
-    public DeliveryDto successfulDelivery(@RequestBody UUID deliveryId) {
-        return deliveryService.successfulDelivery(deliveryId);
+    @PostMapping("/successful")
+    public ResponseEntity<DeliveryDto> successfulDelivery(@RequestBody UUID deliveryId) {
+        return ResponseEntity.ok(deliveryService.successfulDelivery(deliveryId));
     }
 
-    @Override
-    public DeliveryDto failedDelivery(@RequestBody UUID deliveryId) {
-        return deliveryService.failedDelivery(deliveryId);
+    @PostMapping("/failed")
+    public ResponseEntity<DeliveryDto> failedDelivery(@RequestBody UUID deliveryId) {
+        return ResponseEntity.ok(deliveryService.failedDelivery(deliveryId));
     }
 }
