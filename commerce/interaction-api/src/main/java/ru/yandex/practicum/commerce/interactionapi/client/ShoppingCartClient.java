@@ -10,24 +10,23 @@ import java.util.Map;
 import java.util.UUID;
 
 @FeignClient(name = "shopping-cart")
-@RequestMapping("/api/v1/shopping-cart")
 public interface ShoppingCartClient {
 
-    @GetMapping
+    @GetMapping("/api/v1/shopping-cart")
     ShoppingCartDto getShoppingCart(@RequestParam("username") String username);
 
-    @PutMapping
+    @PutMapping("/api/v1/shopping-cart")
     ShoppingCartDto addProductToShoppingCart(@RequestParam("username") String username,
                                              @RequestBody Map<UUID, Long> products);
 
-    @PostMapping
+    @PostMapping("/api/v1/shopping-cart")
     ShoppingCartDto changeProductQuantity(@RequestParam("username") String username,
                                           @Valid @RequestBody ChangeProductQuantityRequest request);
 
-    @PostMapping("/remove")
+    @PostMapping("/api/v1/shopping-cart/remove")
     ShoppingCartDto removeProductFromShoppingCart(@RequestParam("username") String username,
                                                   @RequestBody Map<UUID, Long> products);
 
-    @PostMapping("/deactivate")
+    @PostMapping("/api/v1/shopping-cart/deactivate")
     void deactivateShoppingCart(@RequestParam("username") String username);
 }

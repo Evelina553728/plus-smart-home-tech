@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.interactionapi.dto.store;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.UUID;
 
@@ -25,6 +26,10 @@ public class ProductDto {
 
     @NotNull
     private ProductState productState;
+
+    @NotNull
+    @PositiveOrZero
+    private Double price;
 
     public ProductDto() {
     }
@@ -83,5 +88,13 @@ public class ProductDto {
 
     public void setProductState(ProductState productState) {
         this.productState = productState;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

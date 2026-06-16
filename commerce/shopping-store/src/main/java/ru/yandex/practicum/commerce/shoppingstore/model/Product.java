@@ -37,6 +37,9 @@ public class Product {
     @Column(name = "product_state", nullable = false)
     private ProductState productState = ProductState.ACTIVE;
 
+    @Column(name = "price", nullable = false)
+    private Double price;
+
     public Product() {
     }
 
@@ -94,5 +97,13 @@ public class Product {
 
     public void setProductState(ProductState productState) {
         this.productState = productState;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }
